@@ -3268,8 +3268,7 @@ dependencies = [
 [[package]]
 name = "specta"
 version = "2.0.0-rc.23"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "76e9b845c713b099203e50efa3994c73ff25dfcde803d851afde7c818185896f"
+source = "git+https://github.com/oscartbeaumont/specta?rev=09878718731efefd74329b593b29305800906e60#09878718731efefd74329b593b29305800906e60"
 dependencies = [
  "paste",
  "rustc_version",
@@ -3277,18 +3276,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "specta"
-version = "2.0.0-rc.23"
-source = "git+https://github.com/oscartbeaumont/specta?rev=09878718731efefd74329b593b29305800906e60#09878718731efefd74329b593b29305800906e60"
-dependencies = [
- "rustc_version",
-]
-
-[[package]]
 name = "specta-macros"
 version = "2.0.0-rc.23"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83b5e3d7a656d87fc4d2488da7e98d8a71ac34b7b88522bd9d2702349274a9e9"
+source = "git+https://github.com/oscartbeaumont/specta?rev=09878718731efefd74329b593b29305800906e60#09878718731efefd74329b593b29305800906e60"
 dependencies = [
  "Inflector",
  "proc-macro2",
@@ -3301,7 +3291,7 @@ name = "specta-serde"
 version = "0.0.10"
 source = "git+https://github.com/oscartbeaumont/specta?rev=09878718731efefd74329b593b29305800906e60#09878718731efefd74329b593b29305800906e60"
 dependencies = [
- "specta 2.0.0-rc.23 (git+https://github.com/oscartbeaumont/specta?rev=09878718731efefd74329b593b29305800906e60)",
+ "specta",
 ]
 
 [[package]]
@@ -3309,7 +3299,7 @@ name = "specta-typescript"
 version = "0.0.10"
 source = "git+https://github.com/oscartbeaumont/specta?rev=09878718731efefd74329b593b29305800906e60#09878718731efefd74329b593b29305800906e60"
 dependencies = [
- "specta 2.0.0-rc.23 (git+https://github.com/oscartbeaumont/specta?rev=09878718731efefd74329b593b29305800906e60)",
+ "specta",
  "specta-serde",
 ]
 
@@ -3539,7 +3529,7 @@ dependencies = [
  "serde_json",
  "serde_repr",
  "serialize-to-javascript",
- "specta 2.0.0-rc.23 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specta",
  "swift-rs",
  "tauri-build",
  "tauri-macros",
@@ -3660,7 +3650,7 @@ version = "0.0.0"
 dependencies = [
  "rand 0.10.0",
  "serde",
- "specta 2.0.0-rc.23 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specta",
  "specta-typescript",
  "tauri",
  "tauri-plugin",
@@ -3725,7 +3715,7 @@ dependencies = [
  "heck 0.5.0",
  "serde",
  "serde_json",
- "specta 2.0.0-rc.23 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specta",
  "specta-typescript",
  "tauri",
  "tauri-specta-macros",
@@ -3738,7 +3728,7 @@ version = "0.0.0"
 dependencies = [
  "serde",
  "serde_json",
- "specta 2.0.0-rc.23 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specta",
  "specta-typescript",
  "tauri",
  "tauri-build",

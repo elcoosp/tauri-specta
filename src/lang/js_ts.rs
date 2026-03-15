@@ -2,7 +2,7 @@ use std::{borrow::Cow, path::Path};
 
 use heck::ToLowerCamelCase;
 use specta::TypeCollection;
-use specta::datatype::{DataType, Field, Reference, Struct};
+use specta::datatype::{DataType, Field, FunctionReturnType, Reference, Struct};
 use specta_typescript::{Error, Exporter, FrameworkExporter, define};
 
 use crate::{BuilderConfiguration, ErrorHandlingMode, LanguageExt};
@@ -204,15 +204,26 @@ fn runtime(
                 let mut invoke_ts = "__TAURI_INVOKE".to_string();
                 if !jsdoc {
                     invoke_ts.push('<');
-                    invoke_ts.push_str(&match command.result() {
-                        Some(dt) => Cow::Owned(render_reference_dt(
-                            extract_std_result(dt, &cfg.types)
-                                .map(|(ok, _)| ok)
-                                .unwrap_or(dt),
-                            &exporter,
-                        )?),
-                        None => Cow::Borrowed("void"),
-                    });
+                    let type_str = match command.result() {
+                        Some(rt) => {
+                            if let Some(dt) = as_data_type(rt) {
+                                // If it's a Result type, extract the ok part (even in Throw mode)
+                                let dt_for_rendering = extract_std_result(rt, &cfg.types)
+                                    .map(|(ok, _)| ok)
+                                    .unwrap_or(dt);
+                                render_reference_dt(dt_for_rendering, &exporter)?
+                            } else {
+                                // Void or Never
+                                match rt {
+                                    FunctionReturnType::Void => "void".to_string(),
+                                    FunctionReturnType::Never => "never".to_string(),
+                                    _ => unreachable!(),
+                                }
+                            }
+                        }
+                        None => "void".to_string(),
+                    };
+                    invoke_ts.push_str(&type_str);
                     invoke_ts.push('>');
                 }
                 invoke_ts.push_str(&invoke_args);
@@ -367,31 +378,40 @@ fn runtime(
     Ok(Cow::Owned(out))
 }
 
+fn as_data_type(rt: &FunctionReturnType) -> Option<&DataType> {
+    match rt {
+        FunctionReturnType::DataType(dt) => Some(dt),
+        _ => None,
+    }
+}
+
 fn extract_std_result<'a>(
-    dt: &'a DataType,
+    rt: &'a FunctionReturnType,
     types: &'a TypeCollection,
 ) -> Option<(&'a DataType, &'a DataType)> {
+    let dt = as_data_type(rt)?;
     let DataType::Reference(Reference::Named(r)) = dt else {
         return None;
     };
-
     let ndt = r.get(types)?;
     if ndt.name() != "Result" {
         return None;
     }
-
     let module_path = ndt.module_path();
     if module_path != "std::result" && module_path != "core::result" {
         return None;
     }
-
     let mut generics = r.generics().iter();
     let (_, ok) = generics.next()?;
     let (_, err) = generics.next()?;
     Some((ok, err))
 }
 
-fn is_channel_type(dt: &DataType, types: &TypeCollection) -> bool {
+fn is_channel_type(rt: &FunctionReturnType, types: &TypeCollection) -> bool {
+    let dt = match as_data_type(rt) {
+        Some(dt) => dt,
+        None => return false,
+    };
     match dt {
         DataType::Reference(Reference::Named(r)) => r
             .get(types)
